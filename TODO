@@ -1,3 +1,9 @@
+all
+    * create a separate error codes file
+
 mv-mysql
     * add ability to move tables
     * add ability to read database info from configuration files
+
+ls-mysql
+    * add ability to list tables inside a database
