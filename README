@@ -1,0 +1,55 @@
+mysql-cli-tools
+---------------
+
+This is a small collection of tools which are convenient for doing basic
+mysql operations at the command line. None are especially fancy, but are
+instead meant to allow you to avoid starting up a mysql-client to do basic
+filesystem-like operations. Currently, the following two tools exist:
+
+    * mv-mysql -- move (i.e. rename) a mysql database
+    * ls-mysql -- list the databases of a mysql server
+
+Eventually one more tool may be created, and the previously mentioned tools
+may be expanded a bit in their functionality, but other than that this probably
+will not evolve very much. The point is to be a little lazier in certain
+specific use-cases.
+
+
+Installation
+------------
+
+There is a Makefile allowing convenient installation/uninstallation to
+/usr/local/bin/. If you would prefer to install it somewhere else, you can
+simply copy the contents of the binary directory to that folder.
+
+_Note_: If you happen to have programs installed in /usr/local/bin/ with the
+same names as the ones provided here, the Makefile will happilly _overwrite_
+them. Hence, use at your own risk.
+
+
+OS Support
+----------
+
+I run Linux (derivatives of debian) and have not tried it anywhere else. It
+should presumably work on any Linux distribution as well as 
+
+
+Requirements
+------------
+
+Python 2.7 and the python module pymysql are required:
+
+    * [ADD PYTHON 2.7 URL]
+    * [ADD PYMYSQL URL]
+
+Earlier versions of python may work, but they're not tested. If you need to
+install pymysql, I recommend using pip.
+
+
+Warning
+-------
+
+I am using these programs myself and do trust them, but they do deal with
+database tables and therefore a bug causing data loss could be very
+catastrophic. The implementations of pretty simple, but I cannot guarantee that
+these programs are risk-free.
