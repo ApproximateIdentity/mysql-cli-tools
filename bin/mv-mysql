@@ -1,0 +1,199 @@
+#!/usr/bin/env python
+
+description = """
+This script moves (i.e. renames) a mysql database. It will _not_ move a
+database if the destination database already exists.
+"""
+
+import sys
+import argparse
+import pymysql
+
+
+DATABASE_CONNECTION_ERROR = 1
+DATABASE_DOES_NOT_EXIST_ERROR = 2
+DATABASE_EXISTS_ERROR = 3
+DATABASE_CREATION_ERROR = 4
+TABLE_MOVE_ERROR = 5
+DATABASE_DROP_ERROR = 6
+
+
+def main(dbinfo, source_db, dest_db, verbose=False):
+    # Check credentials.
+    try:
+        with pymysql.connect(**dbinfo) as _:
+            pass
+    except:
+        error_message = "Error: Could not connect to mysql server!"
+        print error_message
+        sys.exit(DATABASE_CONNECTION_ERROR)
+        
+
+    # Check that `source_db` exists.
+    database_query  = """
+        SELECT SCHEMA_NAME
+        FROM information_schema.SCHEMATA
+        WHERE SCHEMA_NAME = '{database}'
+        ;
+    """
+    with pymysql.connect(**dbinfo) as cursor:
+        cursor.execute(database_query.format(database=source_db))
+        if cursor.rowcount != 1:
+            error_message = "Error: Database '{0}' does not exist!".format(
+                source_db)
+            print error_message
+            sys.exit(DATABASE_DOES_NOT_EXIST_ERROR)
+
+    # Check that `dest_db` does not exist.
+    with pymysql.connect(**dbinfo) as cursor:
+        cursor.execute(database_query.format(database=dest_db))
+        if cursor.rowcount != 0:
+            error_message = "Error: Database '{0}' already exists!".format(
+                dest_db)
+            print error_message
+            sys.exit(DATABASE_EXISTS_ERROR)
+
+    # Create database `dest_db`.
+    try:
+        query = "CREATE DATABASE {0};".format(dest_db)
+        with pymysql.connect(**dbinfo) as cursor:
+            cursor.execute(query)
+    except:
+        # TODO: Maybe only catch a specific error?
+        error_message = "Error: Could not create database '{0}'!".format(
+            dest_db)
+        print error_message
+        sys.exit(DATABASE_CREATION_ERROR)
+
+    # Get list of tables in `source_db`.
+    query = """
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema='{source_db}'
+        ;
+    """.format(source_db=source_db)
+    with pymysql.connect(**dbinfo) as cursor:
+        cursor.execute(query)
+        source_db_tables = [table for table, in cursor]
+
+    # Rename tables in `source_db` to `dest_db`.
+    query_template = """
+        RENAME TABLE {source_db}.{table}
+        TO {dest_db}.{table}
+        ;
+    """
+    for table in source_db_tables:
+        try:
+            with pymysql.connect(**dbinfo) as cursor:
+                query = query_template.format(
+                    source_db=source_db,
+                    dest_db=dest_db,
+                    table=table)
+                cursor.execute(query)
+                if verbose:
+                    msg = "\t{source_db}.{table} --> {dest_db}.{table}".format(
+                        source_db=source_db, dest_db=dest_db, table=table)
+                    print msg
+        except:
+            # TODO: Maybe only catch a specific error?
+            error_message = "Error: Could not move tables!"
+            print error_message
+
+            # Drop database `dest_db` to roll back all chanages.
+            with pymysql.connect(**dbinfo) as cursor:
+                try:
+                    query = "DROP DATABASE {0};".format(dest_db)
+                    cursor.execute(query)
+                except:
+                    error_msg = "Error: Could not drop database {0}!".format(
+                        dest_db)
+                    print error_message
+                    sys.exit(DATABASE_DROP_ERROR)
+
+            sys.exit(TABLE_MOVE_ERROR)
+
+    # Drop database `source_db`.
+    try:
+        with pymysql.connect(**dbinfo) as cursor:
+            query = """
+                DROP DATABASE {0}
+                ;
+            """.format(source_db)
+            cursor.execute(query)
+    except:
+        error_msg = "Error: Could not drop database {0}!".format(
+            source_db)
+        print error_message
+        sys.exit(DATABASE_DROP_ERROR)
+
+
+def cli():
+    parser = argparse.ArgumentParser(
+                description=description,
+                formatter_class=argparse.RawTextHelpFormatter,
+                add_help=False)
+
+    # Override default help argument so that only --help (and not -h) can call
+    # help
+    parser.add_argument(
+        '--help',
+        action='help',
+        default=argparse.SUPPRESS,
+        help=argparse._('show this help message and exit'))
+
+    parser.add_argument(
+        'source_db',
+        metavar='SOURCE_DB',
+        type=str,
+        help='Name of source database.')
+
+    parser.add_argument(
+        'dest_db',
+        metavar='DEST_DB',
+        type=str,
+        help='Name of destination database.')
+
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='Print detailed move information.')
+
+    parser.add_argument(
+        '-h',
+        "--host",
+        required=False,
+        type=str,
+        default='127.0.0.1',
+        help="Default: '127.0.0.1'")
+
+    parser.add_argument(
+        '-u',
+        "--user",
+        required=False,
+        type=str,
+        default='root',
+        help="Default: 'root'")
+
+    parser.add_argument(
+        '-p',
+        "--password",
+        metavar='PW',
+        required=False,
+        type=str,
+        default='',
+        help="Default: ''")
+
+    args = parser.parse_args()
+
+    dbinfo = {
+        'host': args.host,
+        'user': args.user,
+        'password': args.password}
+
+    return (dbinfo, args.source_db, args.dest_db, args.verbose)
+
+
+if __name__ == '__main__':
+    dbinfo, source_db, dest_db, verbose = cli()
+    main(dbinfo, source_db, dest_db, verbose=verbose)
