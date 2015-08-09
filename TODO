@@ -1,0 +1,3 @@
+mv-mysql
+    * add ability to move tables
+    * add ability to read database info from configuration files
