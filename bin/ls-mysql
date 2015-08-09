@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+description = """
+This script lists the databases contained in a mysql server.
+"""
+
+import sys
+import argparse
+import pymysql
+
+
+DATABASE_CONNECTION_ERROR = 1
+
+
+def main(dbinfo):
+    # Check credentials.
+    try:
+        with pymysql.connect(**dbinfo) as _:
+            pass
+    except:
+        error_message = "Error: Could not connect to mysql server!"
+        print error_message
+        sys.exit(DATABASE_CONNECTION_ERROR)
+
+    # Get a list of all databases.
+    database_query  = """
+        SELECT SCHEMA_NAME
+        FROM information_schema.SCHEMATA
+        ;
+    """
+    with pymysql.connect(**dbinfo) as cursor:
+        # TODO: Can an error occur here?
+        cursor.execute(database_query)
+        databases = [db for db, in cursor]
+
+    for db in databases:
+        print db
+
+
+def cli():
+    parser = argparse.ArgumentParser(
+                description=description,
+                formatter_class=argparse.RawTextHelpFormatter,
+                add_help=False)
+
+    # Override default help argument so that only --help (and not -h) can call
+    # help
+    parser.add_argument(
+        '--help',
+        action='help',
+        default=argparse.SUPPRESS,
+        help=argparse._('show this help message and exit'))
+
+    parser.add_argument(
+        '-h',
+        "--host",
+        required=False,
+        type=str,
+        default='127.0.0.1',
+        help="Default: '127.0.0.1'")
+
+    parser.add_argument(
+        '-u',
+        "--user",
+        required=False,
+        type=str,
+        default='root',
+        help="Default: 'root'")
+
+    parser.add_argument(
+        '-p',
+        "--password",
+        metavar='PW',
+        required=False,
+        type=str,
+        default='',
+        help="Default: ''")
+
+    args = parser.parse_args()
+
+    dbinfo = {
+        'host': args.host,
+        'user': args.user,
+        'password': args.password}
+
+    return dbinfo
+
+
+if __name__ == '__main__':
+    dbinfo = cli()
+    main(dbinfo)
