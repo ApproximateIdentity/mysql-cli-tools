@@ -1,6 +1,5 @@
 all
     * create a separate error codes file
-    * add urls to README
 
 mv-mysql
     * add ability to move tables

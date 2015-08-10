@@ -37,13 +37,15 @@ should presumably work on any Linux distribution as well as
 Requirements
 ------------
 
-Python 2.7 and the python module pymysql are required:
+Python 2.7 and the python module MySQLdb are required:
 
-    * [ADD PYTHON 2.7 URL]
-    * [ADD PYMYSQL URL]
+    * https://www.python.org/downloads/release/python-2710/
+    * https://pypi.python.org/pypi/MySQL-python/1.2.4
 
 Earlier versions of python may work, but they're not tested. If you need to
-install pymysql, I recommend using pip.
+install MySQLdb, you can use pip (execute `pip MySQL-python`) or if you're
+useing a debian-derivative, you can use apt-get (`apt-get install
+python-mysqldb`).
 
 
 Warning
