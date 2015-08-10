@@ -6,7 +6,7 @@ This script lists the databases contained in a mysql server.
 
 import sys
 import argparse
-import pymysql
+import MySQLdb
 
 
 DATABASE_CONNECTION_ERROR = 1
@@ -15,7 +15,7 @@ DATABASE_CONNECTION_ERROR = 1
 def main(dbinfo):
     # Check credentials.
     try:
-        with pymysql.connect(**dbinfo) as _:
+        with MySQLdb.connect(**dbinfo) as _:
             pass
     except:
         error_message = "Error: Could not connect to mysql server!"
@@ -28,7 +28,7 @@ def main(dbinfo):
         FROM information_schema.SCHEMATA
         ;
     """
-    with pymysql.connect(**dbinfo) as cursor:
+    with MySQLdb.connect(**dbinfo) as cursor:
         # TODO: Can an error occur here?
         cursor.execute(database_query)
         databases = [db for db, in cursor]
@@ -69,7 +69,7 @@ def cli():
 
     parser.add_argument(
         '-p',
-        "--password",
+        "--passwd",
         metavar='PW',
         required=False,
         type=str,
@@ -81,7 +81,7 @@ def cli():
     dbinfo = {
         'host': args.host,
         'user': args.user,
-        'password': args.password}
+        'passwd': args.passwd}
 
     return dbinfo
 
