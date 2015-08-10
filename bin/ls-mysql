@@ -69,7 +69,7 @@ def cli():
 
     parser.add_argument(
         '-p',
-        "--passwd",
+        "--password",
         metavar='PW',
         required=False,
         type=str,
@@ -81,7 +81,7 @@ def cli():
     dbinfo = {
         'host': args.host,
         'user': args.user,
-        'passwd': args.passwd}
+        'passwd': args.password}
 
     return dbinfo
 
