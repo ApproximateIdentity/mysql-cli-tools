@@ -1,0 +1,4 @@
+MANIFEST
+deb_dist/*
+dist/*
+sdist/*
