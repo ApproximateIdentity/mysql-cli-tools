@@ -29,3 +29,22 @@ Finally build the package by running the following inside the
 deb_dist/$(package)-$(vers) directory:
 
     $ debuild -uc -us
+
+
+Extra Resources
+---------------
+
+_debian packaging_:
+
+See the following pages for help in debian packaging:
+
+    * https://wiki.debian.org/IntroDebianPackaging
+    * https://wiki.debian.org/Python/Packaging
+
+_apt repository_:
+
+See the following pages for help in setting up (private) apt package hosting:
+
+    * https://wiki.debian.org/SettingUpSignedAptRepositoryWithReprepro
+    * http://blog.jonliv.es/blog/2011/04/26/creating-your-own-signed-apt-repository-and-debian-packages/
+    * https://www.debian-administration.org/article/513/Restrict_Access_To_Your_Private_Debian_Repository
