@@ -1,6 +1,10 @@
 all
     * create a separate error codes file
 
+setup
+    * add extra info to setup.py. see the following url for info:
+      https://docs.python.org/2/distutils/setupscript.html#additional-meta-data
+
 mv-mysql
     * add ability to move tables
     * add ability to read database info from configuration files

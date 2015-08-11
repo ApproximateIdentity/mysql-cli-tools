@@ -18,13 +18,11 @@ specific use-cases.
 Installation
 ------------
 
-There is a Makefile allowing convenient installation/uninstallation to
-/usr/local/bin/. If you would prefer to install it somewhere else, you can
-simply copy the contents of the binary directory to that folder.
-
-_Note_: If you happen to have programs installed in /usr/local/bin/ with the
-same names as the ones provided here, the Makefile will happilly _overwrite_
-them. Hence, use at your own risk.
+There is a Makefile allowing convenient installation/uninstallation which uses
+pip behind the hood. Run `make install` and `make uninstall` to
+install/uninstall the package. If you would prefer to install it somewhere
+else, you can simply copy the contents of the scripts/ directory to another
+desired folder.
 
 
 OS Support
