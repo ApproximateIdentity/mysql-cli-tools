@@ -25,6 +25,13 @@ else, you can simply copy the contents of the scripts/ directory to another
 desired folder.
 
 
+Debian Package
+--------------
+
+A debian package can be built by running `make package`. The package can be
+found in the deb_dist/ directory and it can be installed with `dpkg -i`.
+
+
 OS Support
 ----------
 
