@@ -21,14 +21,35 @@ it's `mysql-cli-tools`) and `vers` is the current version of the python package
 (at the time of writing, it's `0.1`).
 
 Next you need to go into the deb_dist/$(package)-$(vers)/debian/ folder and
-make a couple changes. The most important one is to make sure the dependencies
-are listed. At the moment, the dependency you must add is `python-mysqldb`.
-Also you might want to add a copyright file.
+make a couple changes.
 
-Finally build the package by running the following inside the
-deb_dist/$(package)-$(vers) directory:
+_debian/control_:
+
+    * Rename binary package name to mysql-cli-tools. We will not provide public
+        module, so python- prefix is not needed.
+
+    * Replace python-all with python in Build-Depends, we don't need all
+        interpreters.
+
+    * Add `X-Python-Version: >= 2.7` in source stanza. (It probably works with
+        other versions, but they're not tested...)
+
+    * Add `python-mysqldb (>= 1.2.3-2)` as a dependency.
+
+
+_debian/rules_:
+
+    * Change `python-mysql-cli-tools` to `mysql-cli-tools`
+
+Finally build it with:
 
     $ debuild -uc -us
+
+
+Automatic Building
+------------------
+
+Run `make package` to build the package automatically.
 
 
 Extra Resources
