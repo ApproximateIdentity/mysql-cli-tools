@@ -1,0 +1,31 @@
+Packaging
+---------
+
+To turn this into a debian package, you need to have the following debian
+packages installed:
+
+    * devscripts
+    * python-all-dev
+    * python-stdeb
+
+First, generate a source distribution:
+
+	$ python setup.py sdist
+
+Next you need to generate the necessary debian package files:
+
+	$ py2dsc -m 'Thomas Nyberg <tomnyberg@gmail.com>' dist/$package-$vers.tar.gz
+
+_Note_: `package` is the name of the python package (at the time of writing,
+it's `mysql-cli-tools`) and `vers` is the current version of the python package
+(at the time of writing, it's `0.1`).
+
+Next you need to go into the deb_dist/$(package)-$(vers)/debian/ folder and
+make a couple changes. The most important one is to make sure the dependencies
+are listed. At the moment, the dependency you must add is `python-mysqldb`.
+Also you might want to add a copyright file.
+
+Finally build the package by running the following inside the
+deb_dist/$(package)-$(vers) directory:
+
+    $ debuild -uc -us

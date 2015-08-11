@@ -28,8 +28,9 @@ desired folder.
 Debian Package
 --------------
 
-A debian package can be built by running `make package`. The package can be
-found in the deb_dist/ directory and it can be installed with `dpkg -i`.
+A debian package can be built by following the instructions in PACKAGING. The
+package will be found in the deb_dist/ directory and it can be installed with
+`dpkg -i`.
 
 
 OS Support
