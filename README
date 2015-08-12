@@ -25,19 +25,11 @@ else, you can simply copy the contents of the scripts/ directory to another
 desired folder.
 
 
-Debian Package
---------------
-
-A debian package can be built by following the instructions in PACKAGING. The
-package will be found in the deb_dist/ directory and it can be installed with
-`dpkg -i`.
-
-
 OS Support
 ----------
 
 I run Linux (derivatives of debian) and have not tried it anywhere else. It
-should presumably work on any Linux distribution as well as 
+should presumably work on any Linux distribution and possibly as well on OSX.
 
 
 Requirements
@@ -50,7 +42,7 @@ Python 2.7 and the python module MySQLdb are required:
 
 Earlier versions of python may work, but they're not tested. If you need to
 install MySQLdb, you can use pip (execute `pip MySQL-python`) or if you're
-useing a debian-derivative, you can use apt-get (`apt-get install
+using a debian-derivative, you can use apt-get (`apt-get install
 python-mysqldb`).
 
 
