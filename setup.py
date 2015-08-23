@@ -3,8 +3,7 @@
 import os
 from distutils.core import setup
 
-scriptnames = ['ls-mysql', 'mv-mysql']
-scripts = [os.path.join('scripts', s) for s in scriptnames]
+scripts = [os.path.join('scripts', s) for s in os.listdir('scripts')]
 
 setup(name='mysql-cli-tools',
       version='0.1',
