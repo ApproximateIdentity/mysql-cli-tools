@@ -1,0 +1,132 @@
+#!/usr/bin/env python
+
+# Copyright (C) 2015 Thomas Nyberg
+
+# This file is a part of mysql-cli-tools.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+description = """
+This script lists disk usage of the databases contained in a mysql server.
+"""
+
+import sys
+import argparse
+import MySQLdb
+
+
+DATABASE_CONNECTION_ERROR = 1
+
+
+def main(dbinfo):
+    # Check credentials.
+    try:
+        with MySQLdb.connect(**dbinfo) as _:
+            pass
+    except:
+        error_message = "Error: Could not connect to mysql server!"
+        print error_message
+        sys.exit(DATABASE_CONNECTION_ERROR)
+
+    # Get the sizes of all databases.
+    database_query  = """
+        SELECT
+            TABLE_SCHEMA AS "Database",
+            ROUND(SUM(DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024, 1)
+                AS "Size in MB" 
+        FROM information_schema.TABLES
+        GROUP BY TABLE_SCHEMA
+        ;
+    """
+    with MySQLdb.connect(**dbinfo) as cursor:
+        # TODO: Can an error occur here?
+        cursor.execute(database_query)
+        database_sizes = cursor.fetchall()
+
+    total_size = str(sum([size for _, size in database_sizes]))
+
+    # Add header and total size footer to data.
+    database_sizes = [(db, str(size)) for db, size in database_sizes]
+    database_sizes = [('DATABASE', 'SIZE IN MB')] + database_sizes
+    database_sizes += [('TOTAL SIZE', total_size)]
+
+    # Compute column sizes and necessary format strings.
+    columns = zip(*database_sizes)
+    column_widths = [max(len(value) for value in col) for col in columns]
+    fmt = [':<{0}'.format(width) for width in column_widths]
+    fmt = ['{' + f + '}' for f in fmt]
+
+    # Format the data with the format strings.
+    formatted_rows = []
+    for row in database_sizes:
+        formatted_row = [fmt[i].format(val) for i, val in enumerate(row)]
+        formatted_rows.append(formatted_row)
+
+    # Print out the result.
+    for row in formatted_rows:
+        print "\t".join(row)
+
+
+def cli():
+    parser = argparse.ArgumentParser(
+                description=description,
+                formatter_class=argparse.RawTextHelpFormatter,
+                add_help=False)
+
+    # Override default help argument so that only --help (and not -h) can call
+    # help
+    parser.add_argument(
+        '--help',
+        action='help',
+        default=argparse.SUPPRESS,
+        help=argparse._('show this help message and exit'))
+
+    parser.add_argument(
+        '-h',
+        "--host",
+        required=False,
+        type=str,
+        default='127.0.0.1',
+        help="Default: '127.0.0.1'")
+
+    parser.add_argument(
+        '-u',
+        "--user",
+        required=False,
+        type=str,
+        default='root',
+        help="Default: 'root'")
+
+    parser.add_argument(
+        '-p',
+        "--password",
+        metavar='PW',
+        required=False,
+        type=str,
+        default='',
+        help="Default: ''")
+
+    args = parser.parse_args()
+
+    dbinfo = {
+        'host': args.host,
+        'user': args.user,
+        'passwd': args.password}
+
+    return dbinfo
+
+
+if __name__ == '__main__':
+    dbinfo = cli()
+    main(dbinfo)

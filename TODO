@@ -11,12 +11,3 @@ mv-mysql
 
 ls-mysql
     * add ability to list tables inside a database
-
-Wishlist
---------
-    * add `du-mysql` function. use the following sql query:
-
-SELECT table_schema                                        "DB Name", 
-   Round(Sum(data_length + index_length) / 1024 / 1024, 1) "DB Size in MB" 
-FROM   information_schema.tables 
-GROUP  BY table_schema; 
