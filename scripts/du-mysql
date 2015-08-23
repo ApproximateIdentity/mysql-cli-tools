@@ -58,8 +58,9 @@ def main(dbinfo):
 
     # Add header and total size footer to data.
     database_sizes = [(db, str(size)) for db, size in database_sizes]
-    database_sizes = [('DATABASE', 'SIZE IN MB')] + database_sizes
-    database_sizes += [('TOTAL SIZE', total_size)]
+    header = [('DATABASE', 'SIZE IN MB'), ('', '')]
+    footer = [('', ''), ('TOTAL SIZE', total_size)]
+    database_sizes = header + database_sizes + footer
 
     # Compute column sizes and necessary format strings.
     columns = zip(*database_sizes)
