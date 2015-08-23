@@ -1,5 +1,4 @@
 package=mysql-cli-tools
-vers=0.1
 
 install:
 	pip install .
